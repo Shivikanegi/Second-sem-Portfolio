@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Portfolio</title>
+    
+    <!-- Google Fonts: Cormorant Garamond & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables / Design System */
+        :root {
+            --bg-light: #F5F0E8;
+            --bg-dark: #1E3A2F;
+            --accent: #E8892A;
+            --text-light: #1A1A1A;
+            --text-dark: #F5F0E8;
+            --font-display: 'Cormorant Garamond', serif;
+            --font-body: 'Outfit', sans-serif;
+        }
+
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            overflow: hidden; /* Locked until hero is dismissed */
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d17822; }
+
+        /* Paper Grain Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9997; /* Just below custom cursor */
+            opacity: 0.05; /* Subtle */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: multiply;
+        }
+
+        /* Custom Cursor */
+        @media (pointer: fine) {
+            body, a, button, .subject-card { cursor: none !important; }
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 8px; height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+        }
+        .custom-cursor-follower {
+            position: fixed;
+            top: 0; left: 0;
+            width: 40px; height: 40px;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+        }
+        .custom-cursor.hover {
+            width: 0; height: 0;
+        }
+        .custom-cursor-follower.hover {
+            width: 60px; height: 60px;
+            background-color: rgba(232, 137, 42, 0.1);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6, .serif {
+            font-family: var(--font-display);
+        }
+
+        .italic { font-style: italic; }
+
+        /* Decorative Elements */
+        .sparkle, .diamond {
+            color: var(--accent);
+            display: inline-block;
+        }
+        .sparkle::before { content: "✦"; }
+        .diamond::before { content: "◆"; }
+
+        /* Buttons */
+        .btn-pill {
+            background-color: var(--accent);
+            color: var(--text-light);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+        }
+        .btn-pill:hover {
+            background-color: #d17822;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+            color: var(--text-dark);
+            pointer-events: none; /* Let clicks pass through empty areas */
+        }
+        nav > * {
+            pointer-events: auto; /* Re-enable clicks on nav items */
+        }
+
+        .nav-left {
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: inherit;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: opacity 0.3s ease;
+        }
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+
+        /* --- HOME VIEW --- */
+        #home-view {
+            transition: opacity 0.5s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-text-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-2deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+        }
+        
+        .marquee-track.left { animation: marquee-left 30s linear infinite; }
+        .marquee-track.right { animation: marquee-right 30s linear infinite; }
+
+        @keyframes marquee-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        .hero-text {
+            font-family: var(--font-display);
+            font-size: clamp(6rem, 15vw, 18rem);
+            font-weight: 700;
+            line-height: 0.75;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(245, 240, 232, 0.15);
+            white-space: nowrap;
+            letter-spacing: -0.02em;
+            padding-right: 2rem;
+        }
+
+        .hero-text.solid {
+            color: var(--text-dark);
+            -webkit-text-stroke: 0;
+            z-index: 2;
+        }
+
+        .hero-text.offset-1 { opacity: 0.6; }
+        .hero-text.offset-2 { opacity: 0.3; }
+        .hero-text.offset-3 { opacity: 0.1; }
+
+        .hero-sparkle {
+            position: absolute;
+            z-index: 3;
+            /* Using JS for parallax, but we keep the starting position */
+        }
+        .hs-1 { top: 20%; left: 15%; font-size: 3rem; }
+        .hs-2 { top: 75%; right: 18%; font-size: 4rem; }
+        .hs-3 { top: 35%; right: 25%; font-size: 1.5rem; }
+        .hs-4 { top: 85%; left: 25%; font-size: 2rem; }
+
+        /* Subjects Section */
+        .subjects-section {
+            padding: 10rem 4rem;
+            background-color: var(--bg-light);
+            position: relative;
+            z-index: 2;
+        }
+
+        .subjects-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6rem 4rem;
+            align-items: start;
+        }
+
+        .subject-card {
+            border-left: 4px solid var(--accent);
+            padding: 3rem 2rem 3rem 4rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            background: transparent;
+        }
+
+        /* Asymmetric Layout */
+        .subject-card:nth-child(even) {
+            margin-top: 10rem;
+        }
+
+        .subject-card:hover {
+            background-color: #f0e9dd;
+            transform: translateX(15px);
+        }
+
+        .subject-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-family: var(--font-body);
+            letter-spacing: 0.15em;
+        }
+
+        .subject-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.05;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+        }
+
+        .subject-focus {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            font-weight: 400;
+            max-width: 80%;
+        }
+
+        .subject-focus .diamond {
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+        }
+
+        .subject-link-hint {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .subject-card:hover .subject-link-hint {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- ASSIGNMENT VIEW --- */
+        #assignment-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .assignment-header {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            padding: 12rem 4rem 8rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 60vh;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 8rem;
+            left: 4rem;
+            z-index: 10;
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-back:hover {
+            background-color: var(--accent);
+            color: var(--text-light);
+        }
+
+        .assignment-title-giant {
+            font-family: var(--font-display);
+            font-size: clamp(5rem, 10vw, 12rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--text-dark);
+            line-height: 0.85;
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .assignment-content {
+            background-color: var(--bg-light);
+            padding: 10rem 4rem;
+            min-height: 100vh;
+        }
+
+        .assignments-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .assignment-card {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            group: hover;
+        }
+
+        .assignment-img-placeholder {
+            width: 100%;
+            aspect-ratio: 4/5;
+            background-color: #e0d8cc;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .img-inner {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+
+        .assignment-img-placeholder::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: var(--accent);
+            mix-blend-mode: multiply;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
+        }
+
+        .assignment-card:hover .img-inner {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .assignment-card:hover .assignment-img-placeholder::after {
+            opacity: 0.1;
+        }
+
+        .assignment-card h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+        }
+
+        .assignment-card p {
+            font-size: 1.1rem;
+            color: #444;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Clickable link card */
+        .assignment-card.has-link {
+            cursor: none; /* uses custom cursor */
+        }
+        .assignment-card.has-link:hover .assignment-img-placeholder::before {
+            opacity: 1;
+        }
+        .visit-badge {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 10;
+            background-color: var(--accent);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .assignment-card.has-link:hover .visit-badge {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 10rem 4rem;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            position: relative;
+            overflow: hidden;
+        }
+        .about-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: 8rem;
+            align-items: center;
+        }
+        .about-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .about-left h2 {
+            font-family: var(--font-display);
+            font-size: clamp(5rem, 10vw, 10rem);
+            font-weight: 700;
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(245, 240, 232, 0.4);
+            letter-spacing: -0.02em;
+        }
+        .about-left h2 em {
+            color: var(--text-dark);
+            -webkit-text-stroke: 0;
+            font-style: italic;
+            display: block;
+        }
+        .about-right {
+            border-left: 1px solid rgba(245, 240, 232, 0.15);
+            padding-left: 5rem;
+        }
+        .about-name {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            line-height: 1;
+        }
+        .about-bio {
+            font-size: 1.35rem;
+            line-height: 1.8;
+            font-weight: 300;
+            color: rgba(245, 240, 232, 0.85);
+            margin-bottom: 3rem;
+        }
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .about-tag {
+            border: 1px solid rgba(232, 137, 42, 0.5);
+            color: var(--accent);
+            padding: 0.5rem 1.4rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: var(--font-body);
+            border-radius: 50px;
+        }
+        .about-deco-sparkle {
+            position: absolute;
+            color: var(--accent);
+            font-size: 8rem;
+            opacity: 0.04;
+            font-family: var(--font-display);
+            bottom: 2rem;
+            right: 4rem;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) {
+            .about-inner { grid-template-columns: 1fr; gap: 4rem; }
+            .about-right { border-left: none; padding-left: 0; border-top: 1px solid rgba(245,240,232,0.15); padding-top: 3rem; }
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .subjects-grid { gap: 4rem 2rem; }
+            .subject-title { font-size: 2.8rem; }
+            .assignments-grid { grid-template-columns: repeat(2, 1fr); }
+            nav { padding: 1.5rem 2rem; }
+        }
+
+        @media (max-width: 768px) {
+            .subjects-grid { grid-template-columns: 1fr; gap: 4rem; }
+            .subject-card:nth-child(even) { margin-top: 0; }
+            .assignments-grid { grid-template-columns: 1fr; }
+            nav {
+                flex-direction: column; gap: 1.5rem;
+                mix-blend-mode: normal; background-color: var(--bg-dark);
+                padding: 1.5rem; position: absolute;
+            }
+            .nav-right { display: none; }
+            .hero { padding-top: 8rem; }
+            .assignment-header { padding: 10rem 2rem 4rem; min-height: 40vh; }
+            .btn-back { top: 2rem; left: 2rem; }
+            .subject-card { padding: 2rem 1rem 2rem 2rem; }
+            .subjects-section { padding: 6rem 2rem; }
+            .assignment-content { padding: 6rem 2rem; }
+            .custom-cursor, .custom-cursor-follower { display: none; } /* Disable cursor on mobile */
+        }
+
+        /* =====================
+           ENTRY HERO OVERLAY
+        ===================== */
+        #entry-hero {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+            overflow: hidden;
+        }
+
+        /* Clip panels that slide away on dismiss */
+        .entry-panel {
+            position: absolute;
+            width: 100%;
+            background-color: var(--bg-dark);
+            transition: transform 1.2s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        .entry-panel.top    { top: 0; height: 50%; transform-origin: top; }
+        .entry-panel.bottom { bottom: 0; height: 50%; transform-origin: bottom; }
+
+        #entry-hero.dismissed .entry-panel.top    { transform: translateY(-100%); }
+        #entry-hero.dismissed .entry-panel.bottom { transform: translateY(100%); }
+
+        /* Content in the middle */
+        .entry-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.5s ease 0.3s;
+        }
+        #entry-hero.dismissed .entry-content { opacity: 0; }
+
+        .entry-greeting {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.4s forwards;
+        }
+
+        .entry-name {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 12vw, 11rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.7s forwards;
+        }
+        .entry-name em {
+            color: transparent;
+            -webkit-text-stroke: 1px var(--text-dark);
+            font-style: italic;
+            display: block;
+        }
+
+        .entry-role {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: rgba(245, 240, 232, 0.6);
+            margin-top: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 1s forwards;
+        }
+
+        .entry-cta {
+            margin-top: 5rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: rgba(245, 240, 232, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 1.4s forwards, blink 2s ease 2s infinite;
+        }
+        .entry-cta::before, .entry-cta::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 1px;
+            background: rgba(245, 240, 232, 0.25);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Sparkles on entry hero */
+        .entry-sparkle {
+            position: absolute;
+            color: var(--accent);
+            pointer-events: none;
+            animation: pulse 4s infinite alternate ease-in-out;
+        }
+        .es-1 { top: 15%; left: 10%; font-size: 2.5rem; animation-delay: 0s; opacity: 0.5; }
+        .es-2 { bottom: 20%; right: 12%; font-size: 3.5rem; animation-delay: 1s; opacity: 0.4; }
+        .es-3 { top: 40%; right: 8%; font-size: 1.2rem; animation-delay: 2s; opacity: 0.6; }
+        .es-4 { bottom: 30%; left: 15%; font-size: 1.8rem; animation-delay: 0.5s; opacity: 0.3; }
+
+        /* =====================
+           SAFAR MODAL
+        ===================== */
+        .safar-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        .safar-modal-backdrop.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .safar-modal-box {
+            background: #F5F0E8;
+            border-radius: 4px;
+            max-width: 680px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            scrollbar-width: thin;
+        }
+        .safar-modal-backdrop.open .safar-modal-box {
+            transform: translateY(0);
+        }
+        .safar-close {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            z-index: 10;
+            background: rgba(30,58,47,0.85);
+            color: #F5F0E8;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+        .safar-close:hover { background: var(--accent); }
+        .safar-modal-hero {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+        .safar-modal-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(30%);
+        }
+        .safar-modal-tag {
+            position: absolute;
+            bottom: 1rem;
+            left: 1.5rem;
+            background: var(--accent);
+            color: #F5F0E8;
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+        }
+        .safar-modal-body { padding: 2rem 2.5rem 2.5rem; }
+        .safar-modal-header { margin-bottom: 1rem; }
+        .safar-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .safar-subtitle {
+            font-size: 1rem;
+            font-family: var(--font-body);
+            font-weight: 400;
+            color: #666;
+            margin-top: 0.3rem;
+            letter-spacing: 0.05em;
+        }
+        .safar-divider {
+            height: 1px;
+            background: rgba(30,58,47,0.12);
+            margin: 1.5rem 0;
+        }
+        .safar-story-label, .safar-features-label {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        .safar-story p {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: #333;
+            margin-bottom: 0.8rem;
+        }
+        .safar-story p em { font-style: italic; color: var(--bg-dark); font-weight: 500; }
+        .safar-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .safar-feature {
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+            background: rgba(30,58,47,0.04);
+            border-radius: 4px;
+            padding: 0.9rem 1rem;
+        }
+        .safar-feature--wide {
+            grid-column: span 2;
+        }
+        .safar-feature span { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+        .safar-feature strong { display: block; font-size: 0.9rem; color: var(--bg-dark); margin-bottom: 0.2rem; }
+        .safar-feature p { font-size: 0.82rem; color: #666; line-height: 1.5; margin: 0; }
+        .safar-cta-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .safar-cta-btn {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            transition: background 0.25s ease, transform 0.25s ease;
+            display: inline-block;
+        }
+        .safar-cta-btn:hover { background: var(--accent); transform: translateY(-2px); }
+        .safar-built-note {
+            font-size: 0.78rem;
+            color: #999;
+            font-family: var(--font-body);
+        }
+        @media (max-width: 600px) {
+            .safar-modal-box { max-height: 95vh; }
+            .safar-modal-body { padding: 1.5rem; }
+            .safar-features { grid-template-columns: 1fr; }
+            .safar-title { font-size: 2.2rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ==================== ENTRY HERO OVERLAY ==================== -->
+    <div id="entry-hero">
+        <!-- Split panels that slide away -->
+        <div class="entry-panel top"></div>
+        <div class="entry-panel bottom"></div>
+
+        <!-- Sparkle decorators -->
+        <span class="entry-sparkle es-1">✦</span>
+        <span class="entry-sparkle es-2">✦</span>
+        <span class="entry-sparkle es-3">◆</span>
+        <span class="entry-sparkle es-4">◆</span>
+
+        <!-- Main content -->
+        <div class="entry-content">
+            <div class="entry-greeting">Welcome to the portfolio of</div>
+            <h1 class="entry-name">
+                Shivika<em>Negi.</em>
+            </h1>
+            <p class="entry-role">UX & Interaction Design · First Year, Second Semester</p>
+            <div class="entry-cta">Click anywhere to enter</div>
+        </div>
+    </div>
+
+    <!-- Paper Grain Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-follower" id="cursor-follower"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <span>Portfolio</span>
+            <span class="diamond"></span>
+            <span>Design</span>
+        </div>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="#about" onclick="goToAbout(event)">About Me</a>
+            </div>
+            <a href="#subjects" class="btn-pill">View Work</a>
+        </div>
+    </nav>
+
+    <!-- HOME VIEW -->
+    <main id="home-view">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-text-wrapper">
+                <div class="marquee-track left">
+                    <div class="hero-text offset-3">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                    <div class="hero-text offset-3">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                </div>
+                <div class="marquee-track right">
+                    <div class="hero-text offset-2">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                    <div class="hero-text offset-2">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                </div>
+                <div class="marquee-track left">
+                    <div class="hero-text solid italic">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                    <div class="hero-text solid italic">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                </div>
+                <div class="marquee-track right">
+                    <div class="hero-text offset-1">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                    <div class="hero-text offset-1">PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; PORTFOLIO &nbsp; </div>
+                </div>
+            </div>
+            
+            <div class="hero-sparkle sparkle hs-1"></div>
+            <div class="hero-sparkle sparkle hs-2"></div>
+            <div class="hero-sparkle sparkle hs-3"></div>
+            <div class="hero-sparkle sparkle hs-4"></div>
+        </section>
+
+        <!-- Subjects Section -->
+        <section class="subjects-section" id="subjects">
+            <div class="subjects-grid" id="subjects-container">
+                <!-- Cards injected via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ASSIGNMENT VIEW -->
+    <main id="assignment-view">
+        <header class="assignment-header">
+            <button class="btn-pill btn-back" onclick="goHome(event)">← Back to Index</button>
+            <h1 class="assignment-title-giant" id="assignment-page-title">Subject Title</h1>
+        </header>
+        
+        <section class="assignment-content">
+            <div class="assignments-grid" id="assignments-container">
+                <!-- Assignment cards injected via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-inner">
+            <div class="about-left">
+                <div class="about-label"><span class="diamond"></span> Who I Am</div>
+                <h2>ABOUT<em>Me.</em></h2>
+            </div>
+            <div class="about-right">
+                <div class="about-name">Shivika Negi</div>
+                <p class="about-bio">I'm a first year, second semester student of Design, specializing in User Experience &amp; Interaction Design. I explore the intersection of technology, nature, and human behavior through thoughtful, research-driven design practice.</p>
+                <div class="about-tags">
+                    <span class="about-tag">UX Design</span>
+                    <span class="about-tag">Interaction Design</span>
+                    <span class="about-tag">Physical Computing</span>
+                    <span class="about-tag">AI &amp; Design</span>
+                    <span class="about-tag">Biophilic Design</span>
+                </div>
+            </div>
+        </div>
+        <div class="about-deco-sparkle">✦</div>
+    </section>
+
+
+
+    <!-- ==================== SAFAR MODAL ==================== -->
+    <div id="safar-modal" class="safar-modal-backdrop" role="dialog" aria-modal="true">
+        <div class="safar-modal-box">
+            <button class="safar-close" id="safar-close-btn" aria-label="Close">✕</button>
+            <div class="safar-modal-hero">
+                <img src="GangaRiverRishikesh.jpg" alt="Ganga River, Rishikesh" />
+                <div class="safar-modal-tag">UX Case Study · Born in Rishikesh</div>
+            </div>
+            <div class="safar-modal-body">
+                <div class="safar-modal-header">
+                    <h2 class="safar-title serif">Safar</h2>
+                    <p class="safar-subtitle">Group Trip Coordinator</p>
+                </div>
+                <div class="safar-divider"></div>
+                <div class="safar-story">
+                    <div class="safar-story-label">How It Started</div>
+                    <p>During a two-day sketching trip to Rishikesh, coordination broke down — dead batteries, scattered group, no way to regroup. Hours lost to confusion instead of sketching.</p>
+                    <p>On the bus ride home I had one thought: <em>what if an app was built specifically for groups traveling together?</em> That became Safar — tested on real friends, refined through real trips.</p>
+                </div>
+                <div class="safar-divider"></div>
+                <div class="safar-features-label">What It Does</div>
+                <div class="safar-features">
+                    <div class="safar-feature"><span>📍</span><div><strong>Real-Time Location</strong><p>See everyone without constantly texting</p></div></div>
+                    <div class="safar-feature"><span>🛜</span><div><strong>Offline Mode</strong><p>Works without data, syncs when reconnected</p></div></div>
+                    <div class="safar-feature"><span>📋</span><div><strong>Shared Itinerary</strong><p>One place for plans — no endless group chats</p></div></div>
+                    <div class="safar-feature"><span>🔋</span><div><strong>Battery-Friendly</strong><p>Dark mode by default, built for 5% battery</p></div></div>
+                    <div class="safar-feature safar-feature--wide"><span>💸</span><div><strong>Expense Splitting</strong><p>Track who paid what during the trip. Safar calculates each person's share automatically — no more mental math, awkward reminders, or "I'll pay you back" moments that never happen.</p></div></div>
+                </div>
+                <div class="safar-divider"></div>
+                <div class="safar-cta-row">
+                    <a href="https://safar-app-pi.vercel.app/trips" target="_blank" class="safar-cta-btn">Try Safar ↗</a>
+                    <span class="safar-built-note">Built Feb 2026 · Inspired by Rishikesh Field Trip</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        const portfolioData = [
+            {
+                id: "ai-design",
+                number: "01",
+                title: "Story Generation",
+                focus: "Design for & with AI · Narrative & Cinematic Storytelling",
+                assignments: [
+                    { 
+                        title: "The Painter's Last Colour — AI Story Website", 
+                        desc: "A cinematic, narrative-driven single-page story experience built with AI-generated characters, atmospheric audio, and emotionally immersive UI design. Created as part of the Design for & with AI subject.",
+                        image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=800&auto=format&fit=crop",
+                        link: "https://shivikanegi.github.io/The-Painter-s-Last-Colour/"
+                    }
+                ]
+            },
+            {
+                id: "system-thinking",
+                number: "02",
+                title: "DoonSafay",
+                focus: "System Thinking · Product Design & Human-Centered Solutions",
+                assignments: [
+                    { 
+                        title: "DoonSafay — Benchmarking, Field Research & Prototype", 
+                        desc: "A system thinking project exploring real-world cleanliness challenges in Dehradun. Includes benchmarking research, field study observations, and iterative prototype development. Created as part of the System Thinking subject.",
+                        image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
+                        link: "BENCHMARKING . FIELD RESEARCH · PROTOTYPE.pdf"
+                    }
+                ]
+            },
+            {
+                id: "digital-interface",
+                number: "03",
+                title: "Figma",
+                focus: "Digital Interface & Visualisation · UI/UX Prototyping",
+                assignments: [
+                    { 
+                        title: "Figma — Interactive UI Prototype", 
+                        desc: "A fully interactive, high-fidelity mobile application prototype built in Figma, featuring custom component libraries, wireframing, and a complete design system. Created as part of the Digital Interface & Visualisation subject.",
+                        image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800&auto=format&fit=crop",
+                        link: "https://www.figma.com/proto/KOeHgMKFAkVWMSTz7GySeK/Untitled--Copy-?node-id=125-89&p=f&t=mL53x0Pjsesy44oR-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=181%3A83"
+                    }
+                ]
+            },
+            {
+                id: "safar",
+                number: "04",
+                title: "Safar",
+                focus: "Group Trip Coordinator · UX Case Study",
+                modal: "safar-modal",
+                assignments: [
+                    {
+                        title: "Safar — Group Trip Coordinator App",
+                        desc: "During a two-day sketching trip to Rishikesh, coordination broke down — dead batteries, scattered group, no way to regroup. So I built Safar: an app designed for real groups, real chaos, and real connectivity.",
+                        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop"
+                    }
+                ]
+            },
+            {
+                id: "programming",
+                number: "05",
+                title: "QuackTrack",
+                focus: "Programming 2 · Physical Computing & Hardware-Software Integration",
+                assignments: [
+                    { 
+                        title: "QuackTrack — Final Arduino Project", 
+                        desc: "An interactive musical cleaning glove built on Arduino, featuring rubber bristles and a piano-key interface for chore gamification. Combines sensor inputs with buzzer and LED outputs into a working Chindogu prototype. Created as part of the Programming 2 subject.",
+                        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
+                        link: "Chindogu.pdf"
+                    }
+                ]
+            },
+            {
+                id: "report",
+                number: "06",
+                title: "Report Submission",
+                focus: "Documentation & Design Process Synthesis",
+                assignments: [
+                    { 
+                        title: "Rishikesh Field Trip Report", 
+                        desc: "Documented field observations, ecological analysis, and design insights drawn from the Rishikesh study trip.",
+                        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+                        link: "Rishikesh_Field_Trip_Report.html"
+                    },
+                    { 
+                        title: "FRI Field Trip Report", 
+                        desc: "Research findings and visual documentation from the Forest Research Institute visit, exploring architecture, ecology, and sustainable design.",
+                        image: "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=800&auto=format&fit=crop",
+                        link: "FRI_Field_Trip_Report (2).html"
+                    },
+                    { 
+                        title: "Wildlife Institute of India — Field Report", 
+                        desc: "An in-depth study of the Wildlife Institute campus, its biophilic design principles, and observations on human-nature integration in institutional spaces.",
+                        image: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?q=80&w=800&auto=format&fit=crop",
+                        link: "Wildlife Institute of India.pdf"
+                    }
+                ]
+            },
+            {
+                id: "biophilic",
+                number: "07",
+                title: "Biophilic Design",
+                focus: "Nature-Inspired Problem Solving & Biomimicry",
+                assignments: [
+                    { 
+                        title: "Biophilic Design — Full Assignment Portfolio", 
+                        desc: "Biophilic audit of transitional university spaces · Biomimicry application analysis · The Pinecone Bin structural concept.",
+                        image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=800&auto=format&fit=crop"
+                    }
+                ]
+            }
+        ];
+
+        // DOM Elements
+        const homeView = document.getElementById('home-view');
+        const assignmentView = document.getElementById('assignment-view');
+        const subjectsContainer = document.getElementById('subjects-container');
+        const assignmentsContainer = document.getElementById('assignments-container');
+        const assignmentPageTitle = document.getElementById('assignment-page-title');
+        
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let followerX = mouseX;
+        let followerY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if(cursor) cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+        });
+
+        function animateCursor() {
+            followerX += (mouseX - followerX) * 0.15;
+            followerY += (mouseY - followerY) * 0.15;
+            if(follower) follower.style.transform = `translate3d(${followerX}px, ${followerY}px, 0) translate(-50%, -50%)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        function bindHoverEffects() {
+            const interactives = document.querySelectorAll('a, button, .subject-card');
+            interactives.forEach(el => {
+                // Cursor hover
+                el.addEventListener('mouseenter', () => {
+                    if(cursor) cursor.classList.add('hover');
+                    if(follower) follower.classList.add('hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    if(cursor) cursor.classList.remove('hover');
+                    if(follower) follower.classList.remove('hover');
+                });
+            });
+
+            // Magnetic Buttons
+            const magneticElements = document.querySelectorAll('.btn-pill');
+            magneticElements.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    btn.style.transition = 'none';
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                });
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease';
+                    btn.style.transform = 'translate(0, 0)';
+                });
+            });
+        }
+
+        // Parallax Decorators
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            document.querySelectorAll('.sparkle, .diamond').forEach((item, index) => {
+                const speed = (index % 3 + 1) * 0.1;
+                // apply a subtle parallax that doesn't stack permanently
+                item.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+
+        // Render Subjects (Homepage)
+        function renderSubjects() {
+            subjectsContainer.innerHTML = '';
+            portfolioData.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card reveal';
+
+                // If only 1 assignment and it has a direct link → open instantly
+                const singleLink = subject.assignments.length === 1 && subject.assignments[0].link
+                    ? subject.assignments[0].link
+                    : null;
+
+                // Priority: modal > direct link > assignment page
+                card.onclick = () => {
+                    if (subject.modal) {
+                        openSafarModal();
+                    } else if (singleLink) {
+                        window.open(singleLink, '_blank');
+                    } else {
+                        openAssignment(subject.id);
+                    }
+                };
+                
+                card.innerHTML = `
+                    <div class="subject-number">No. ${subject.number}</div>
+                    <h2 class="subject-title serif">${subject.title}</h2>
+                    <div class="subject-focus">
+                        <span class="diamond"></span>
+                        <span>${subject.focus}</span>
+                    </div>
+                    ${singleLink || subject.modal ? `<div class="subject-link-hint">${subject.modal ? 'Discover ↗' : 'Open ↗'}</div>` : ''}
+                `;
+                subjectsContainer.appendChild(card);
+            });
+        }
+
+        // Staggered Title Reveal
+        function staggerRevealTitle(titleStr) {
+            assignmentPageTitle.innerHTML = '';
+            const words = titleStr.split(' ');
+            
+            words.forEach((word, wordIndex) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.style.display = 'inline-block';
+                wordSpan.style.overflow = 'hidden';
+                wordSpan.style.marginRight = '0.3em';
+                
+                [...word].forEach((char, charIndex) => {
+                    const charSpan = document.createElement('span');
+                    charSpan.innerText = char;
+                    charSpan.style.display = 'inline-block';
+                    charSpan.style.transform = 'translateY(100%)';
+                    charSpan.style.opacity = '0';
+                    charSpan.style.transition = `transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease`;
+                    
+                    const delay = (wordIndex * 3 + charIndex) * 40; // milliseconds
+                    charSpan.style.transitionDelay = `${delay}ms`;
+                    
+                    wordSpan.appendChild(charSpan);
+                    
+                    // Trigger animation next frame
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            charSpan.style.transform = 'translateY(0)';
+                            charSpan.style.opacity = '1';
+                        });
+                    });
+                });
+                assignmentPageTitle.appendChild(wordSpan);
+            });
+        }
+
+        // Open Assignment Page
+        function openAssignment(id) {
+            const subject = portfolioData.find(s => s.id === id);
+            if (!subject) return;
+
+            // Render Assignment Cards
+            assignmentsContainer.innerHTML = '';
+            subject.assignments.forEach((assign, index) => {
+                const delay = index * 100;
+                const card = document.createElement('div');
+                card.className = 'assignment-card reveal' + (assign.link ? ' has-link' : '');
+                card.style.transitionDelay = `${delay}ms`;
+                
+                // If card has a link, clicking it opens the site
+                if (assign.link) {
+                    card.addEventListener('click', () => window.open(assign.link, '_blank'));
+                }
+                
+                // Fallback images if unspecified
+                const bgImg = assign.image || `https://source.unsplash.com/random/800x600/?design,${index}`;
+
+                card.innerHTML = `
+                    <div class="assignment-img-placeholder">
+                        <div class="img-inner" style="background-image: url('${bgImg}')"></div>
+                        ${assign.link ? `<div class="visit-badge">Visit Site ↗</div>` : ''}
+                    </div>
+                    <h3 class="serif">${assign.title}</h3>
+                    <p>${assign.desc}</p>
+                `;
+                assignmentsContainer.appendChild(card);
+            });
+
+            // Transition Views
+            homeView.style.opacity = '0';
+            setTimeout(() => {
+                homeView.style.display = 'none';
+                assignmentView.style.display = 'block';
+                // Trigger reflow
+                void assignmentView.offsetWidth;
+                assignmentView.style.opacity = '1';
+                
+                // Stagger reveal title
+                staggerRevealTitle(subject.title);
+                
+                // Trigger reveals on new view
+                window.scrollTo(0,0);
+                setTimeout(revealElements, 100);
+            }, 500);
+        }
+
+        // Return Home
+        function goHome(e) {
+            if(e) e.preventDefault();
+            
+            assignmentView.style.opacity = '0';
+            setTimeout(() => {
+                assignmentView.style.display = 'none';
+                homeView.style.display = 'block';
+                // Trigger reflow
+                void homeView.offsetWidth;
+                homeView.style.opacity = '1';
+                
+                // Re-trigger reveals
+                setTimeout(revealElements, 100);
+            }, 500);
+        }
+
+        // Go to About
+        function goToAbout(e) {
+            if(e) e.preventDefault();
+            
+            if (assignmentView.style.display === 'block') {
+                goHome();
+                setTimeout(() => {
+                    document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+                }, 550);
+            } else {
+                document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Scroll Reveal Logic
+        function revealElements() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            const elementVisible = 100;
+
+            reveals.forEach(reveal => {
+                if(reveal.offsetParent === null) return;
+                
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        }
+
+        // Initialization
+        window.addEventListener('scroll', revealElements);
+        renderSubjects();
+        bindHoverEffects();
+        
+        // Initial reveal
+        setTimeout(revealElements, 300);
+
+        // ── Entry Hero Click-to-Enter ──────────────────────────
+        const entryHero = document.getElementById('entry-hero');
+
+        function dismissEntry() {
+            entryHero.classList.add('dismissed');
+
+            // After panels fully slide away, remove the overlay and unlock scroll
+            setTimeout(() => {
+                entryHero.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                // Fire scroll-reveal for visible elements
+                revealElements();
+            }, 1300); // matches the 1.2s CSS transition + small buffer
+        }
+
+        entryHero.addEventListener('click', dismissEntry);
+        // Also support keyboard (Enter/Space) for accessibility
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && entryHero.style.display !== 'none') {
+                dismissEntry();
+            }
+        });
+
+        // ── Safar Modal ──────────────────────────────────────
+        const safarModal = document.getElementById('safar-modal');
+        const safarCloseBtn = document.getElementById('safar-close-btn');
+
+        function openSafarModal() {
+            safarModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSafarModal() {
+            safarModal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        safarCloseBtn.addEventListener('click', closeSafarModal);
+        // Click outside modal box to close
+        safarModal.addEventListener('click', (e) => {
+            if (e.target === safarModal) closeSafarModal();
+        });
+        // ESC key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSafarModal();
+        });
+
+    </script>
+</body>
+</html>
